@@ -1,0 +1,2 @@
+insert into OPENING_DATE(ID, CLOSING_HOUR, OPENING_HOUR, OPENING_DAY)
+values (NEXTVAL('op_seq'), '23:30', '18:00', '2021-06-11');
