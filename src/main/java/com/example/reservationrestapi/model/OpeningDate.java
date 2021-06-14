@@ -1,5 +1,7 @@
 package com.example.reservationrestapi.model;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -11,6 +13,8 @@ public class OpeningDate {
     @Id
     private Integer id;
 
+    @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date openingDate;
     private String openingHour;
     private String closingHour;

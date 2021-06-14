@@ -1,2 +1,25 @@
-insert into OPENING_DATE(ID, CLOSING_HOUR, OPENING_HOUR, OPENING_DAY)
-values (NEXTVAL('op_seq'), '23:30', '18:00', '2021-06-11');
+insert into OPENING_DATE(ID, CLOSING_HOUR, OPENING_HOUR, OPENING_DATE)
+values (NEXTVAL('op_seq'), '23:30', '18:00', '2021-06-11'),
+       (NEXTVAL('op_seq'), '23:30', '14:00', '2021-06-12'),
+       (NEXTVAL('op_seq'), '23:00', '20:00', '2021-06-15'),
+       (NEXTVAL('op_seq'), '23:00', '18:00', '2021-06-16'),
+       (NEXTVAL('op_seq'), '23:30', '18:00', '2021-06-17'),
+       (NEXTVAL('op_seq'), '23:30', '18:00', '2021-06-18'),
+       (NEXTVAL('op_seq'), '23:30', '14:00', '2021-06-19'),
+       (NEXTVAL('op_seq'), '23:00', '18:00', '2021-06-21'),
+       (NEXTVAL('op_seq'), '23:00', '18:00', '2021-06-23'),
+       (NEXTVAL('op_seq'), '23:30', '5:00', '2021-06-25'),
+       (NEXTVAL('op_seq'), '23:30', '14:00', '2021-06-26'),
+       (NEXTVAL('op_seq'), '23:00', '16:00', '2021-06-27'),
+       (NEXTVAL('op_seq'), '23:00', '18:00', '2021-06-28'),
+       (NEXTVAL('op_seq'), '23:00', '18:00', '2021-06-29'),
+       (NEXTVAL('op_seq'), '23:00', '18:00', '2021-06-30'),
+       (NEXTVAL('op_seq'), '23:30', '18:00', '2021-07-02'),
+       (NEXTVAL('op_seq'), '23:30', '14:00', '2021-07-03'),
+       (NEXTVAL('op_seq'), '23:30', '18:00', '2021-07-04'),
+       (NEXTVAL('op_seq'), '23:00', '18:00', '2021-07-06'),
+       (NEXTVAL('op_seq'), '23:00', '18:00', '2021-07-07'),
+       (NEXTVAL('op_seq'), '23:00', '18:00', '2021-07-08'),
+       (NEXTVAL('op_seq'), '23:30', '18:00', '2021-07-09'),
+       (NEXTVAL('op_seq'), '23:30', '14:00', '2021-07-10'),
+       (NEXTVAL('op_seq'), '23:00', '18:00', '2021-07-11');

@@ -1,35 +1,46 @@
 package com.example.reservationrestapi.controllers;
 
 
+import com.example.reservationrestapi.exceptions.openingdate.OpeningsDateNotFoundException;
 import com.example.reservationrestapi.model.OpeningDate;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.example.reservationrestapi.repositories.OpeningDateRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@RequestMapping("/openingdates")
 public class OpeningsDatesController {
 
-    public ArrayList<OpeningDate> getOpeningsDates() throws Exception{
-        ArrayList<OpeningDate> openingsDates = new ArrayList<>();
-        openingsDates.add(new OpeningDate(new SimpleDateFormat("yyyy-MM-dd").parse("2021-06-11"), "18:00", "23:30"));
-        openingsDates.add(new OpeningDate(new SimpleDateFormat("yyyy-MM-dd").parse("2021-06-12"), "18:00", "23:30"));
-        openingsDates.add(new OpeningDate(new SimpleDateFormat("yyyy-MM-dd").parse("2021-06-13"), "18:00", "23:30"));
-        openingsDates.add(new OpeningDate(new SimpleDateFormat("yyyy-MM-dd").parse("2021-06-14"), "18:00", "23:30"));
-        openingsDates.add(new OpeningDate(new SimpleDateFormat("yyyy-MM-dd").parse("2021-06-15"), "18:00", "23:30"));
-        openingsDates.add(new OpeningDate(new SimpleDateFormat("yyyy-MM-dd").parse("2021-06-16"), "18:00", "23:30"));
-        return  openingsDates;
-    }
+    @Autowired
+    OpeningDateRepository openingDateRepository;
 
-    @GetMapping("/openingdates")
+    @GetMapping("/")
     public List<OpeningDate> getAllOpeningsDates(){
-        try {
-        return getOpeningsDates();
-        }catch (Exception e){
-            return null;
-        }
+        return (List<OpeningDate>) openingDateRepository.findAll();
     }
 
+    @GetMapping("/{id}")
+    public OpeningDate getOneOpeningsdate(@PathVariable Integer id){
+        return openingDateRepository.findById(id).orElseThrow(() -> new OpeningsDateNotFoundException(id));
+    }
+
+    @PutMapping("/{id}")
+    public OpeningDate replaceOpeningsDate(@RequestBody OpeningDate newOpeningDate,
+                                           @PathVariable Integer id){
+        return openingDateRepository.findById(id).map(openingDate -> {
+            openingDate.setOpeningHour(newOpeningDate.getOpeningHour());
+            openingDate.setClosingHour(newOpeningDate.getClosingHour());
+            return openingDateRepository.save(openingDate);
+        }).orElseGet(() -> {
+            newOpeningDate.setId(id);
+            return openingDateRepository.save(newOpeningDate);
+        });
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteOpeningsDate(@PathVariable Integer id) {
+        openingDateRepository.deleteById(id);
+    }
 }
