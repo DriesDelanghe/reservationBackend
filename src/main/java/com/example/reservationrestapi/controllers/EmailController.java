@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/email")
+@RequestMapping("/data/email")
 public class EmailController {
 
     @Autowired
     EmailRepository emailRepository;
 
-    @GetMapping("/")
+    @GetMapping("/all")
     public List<Email> getAllEmail(){
         return (List<Email>) emailRepository.findAll();
     }
@@ -25,7 +25,7 @@ public class EmailController {
         return emailRepository.findById(id).orElseThrow(() -> new EmailNotFoundException(id));
     }
 
-    @PutMapping({"/{id}", "", "/"})
+    @PutMapping({"/{id}", "/"})
     public Email replaceEmail(@RequestBody Email newEmail,
                               @PathVariable(required = false) Integer id){
         if (id == null){

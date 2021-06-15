@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/person")
+@RequestMapping("/data/person")
 public class PersonController {
 
     @Autowired
     PersonRepository personRepository;
 
-    @GetMapping("/")
+    @GetMapping("/all")
     public List<Person> GetAllPeople() {
         return (List<Person>) personRepository.findAll();
     }
@@ -25,7 +25,7 @@ public class PersonController {
         return personRepository.findById(id).orElseThrow(() -> new PersonNotFoundException(id));
     }
 
-    @PutMapping({"/{id}", "/", ""})
+    @PutMapping({"/{id}", ""})
     public Person replacePerson(@RequestBody Person newPerson,
                                 @PathVariable(required = false) Integer id) {
         if (id == null) {

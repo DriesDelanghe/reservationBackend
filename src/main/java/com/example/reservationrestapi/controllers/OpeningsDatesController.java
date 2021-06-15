@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/openingdates")
+@RequestMapping("/data/openingdates")
 public class OpeningsDatesController {
 
     @Autowired
     OpeningDateRepository openingDateRepository;
 
-    @GetMapping("/")
+    @GetMapping("/all")
     public List<OpeningDate> getAllOpeningsDates(){
         return (List<OpeningDate>) openingDateRepository.findAll();
     }
@@ -26,7 +26,7 @@ public class OpeningsDatesController {
         return openingDateRepository.findById(id).orElseThrow(() -> new OpeningsDateNotFoundException(id));
     }
 
-    @PutMapping({"/{id}", "", "/"})
+    @PutMapping({"/{id}", "/"})
     public OpeningDate replaceOpeningsDate(@RequestBody OpeningDate newOpeningDate,
                                            @PathVariable(required = false) Integer id){
         if (id == null){

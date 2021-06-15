@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/reservation")
+@RequestMapping("/data/reservation")
 public class reservationController {
 
     @Autowired
     ReservationRepository reservationRepository;
 
-    @GetMapping("/")
+    @GetMapping("/all")
     public List<Reservation> getAllReservations(){
         return (List<Reservation>) reservationRepository.findAll();
     }
@@ -25,7 +25,7 @@ public class reservationController {
         return reservationRepository.findById(id).orElseThrow(() -> new ReservationNotFoundException(id));
     }
 
-    @PutMapping({"/{id}", "/", ""})
+    @PutMapping({"/{id}", "/"})
     public Reservation replaceReservation(@RequestBody Reservation newReservation,
                                           @PathVariable(required = false) Integer id){
         if (id == null){
