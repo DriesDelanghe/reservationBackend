@@ -23,3 +23,17 @@ values (NEXTVAL('op_seq'), '23:30', '18:00', '2021-06-11'),
        (NEXTVAL('op_seq'), '23:30', '18:00', '2021-07-09'),
        (NEXTVAL('op_seq'), '23:30', '14:00', '2021-07-10'),
        (NEXTVAL('op_seq'), '23:00', '18:00', '2021-07-11');
+
+insert into MONTH(id, month_name)
+values (NEXTVAL('mo_seq'), 'jan'),
+       (NEXTVAL('mo_seq'), 'feb'),
+       (NEXTVAL('mo_seq'), 'mar'),
+       (NEXTVAL('mo_seq'), 'apr'),
+       (NEXTVAL('mo_seq'), 'mei'),
+       (NEXTVAL('mo_seq'), 'jun'),
+       (NEXTVAL('mo_seq'), 'jul'),
+       (NEXTVAL('mo_seq'), 'aug'),
+       (NEXTVAL('mo_seq'), 'sep'),
+       (NEXTVAL('mo_seq'), 'oct'),
+       (NEXTVAL('mo_seq'), 'nov'),
+       (NEXTVAL('mo_seq'), 'dec')
