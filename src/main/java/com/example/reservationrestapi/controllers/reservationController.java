@@ -2,7 +2,11 @@ package com.example.reservationrestapi.controllers;
 
 import com.example.reservationrestapi.exceptions.reservation.ReservationNotFoundException;
 import com.example.reservationrestapi.model.Reservation;
+import com.example.reservationrestapi.repositories.EmailRepository;
+import com.example.reservationrestapi.repositories.PersonRepository;
 import com.example.reservationrestapi.repositories.ReservationRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,8 +16,14 @@ import java.util.List;
 @RequestMapping("/data/reservation")
 public class reservationController {
 
+    Logger logger = LoggerFactory.getLogger(reservationController.class);
+
     @Autowired
     ReservationRepository reservationRepository;
+    @Autowired
+    PersonRepository personRepository;
+    @Autowired
+    EmailRepository emailRepository;
 
     @GetMapping("/all")
     public List<Reservation> getAllReservations(){
@@ -28,7 +38,13 @@ public class reservationController {
     @PutMapping({"/{id}", "/"})
     public Reservation replaceReservation(@RequestBody Reservation newReservation,
                                           @PathVariable(required = false) Integer id){
+
+        logger.info(String.valueOf(newReservation));
         if (id == null){
+            personRepository.saveAll(newReservation.getPersonList());
+            if (newReservation.isConfirmation()){
+                emailRepository.save(newReservation.getEmail());
+            }
             return reservationRepository.save(newReservation);
         }
         return reservationRepository.findById(id).map(reservation -> {

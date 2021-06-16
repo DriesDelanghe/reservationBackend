@@ -16,6 +16,7 @@ public class Reservation {
     private List<OpeningDate> openingDateList;
     @OneToMany
     private List<Person> personList;
+    private boolean confirmation = false;
 
     public Reservation() {
     }
@@ -50,5 +51,13 @@ public class Reservation {
 
     public void setPersonList(List<Person> personList) {
         this.personList = personList;
+    }
+
+    public boolean isConfirmation() {
+        return confirmation;
+    }
+
+    public void setConfirmation(boolean confirmation) {
+        this.confirmation = confirmation;
     }
 }
