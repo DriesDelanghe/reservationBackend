@@ -5,28 +5,32 @@ import com.example.reservationrestapi.exceptions.openingdate.OpeningsDateNotFoun
 import com.example.reservationrestapi.model.OpeningDate;
 import com.example.reservationrestapi.repositories.OpeningDateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/data/openingdates")
 public class OpeningDatesController {
 
     @Autowired
     OpeningDateRepository openingDateRepository;
 
-    @GetMapping("/all")
+    @GetMapping("/data/openingdates")
     public List<OpeningDate> getAllOpeningsDates(){
         return (List<OpeningDate>) openingDateRepository.findAll();
     }
 
-    @GetMapping("/{id}")
+    //ROLE_ADMIN only access
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @GetMapping("/restricted/openingdates/{id}")
     public OpeningDate getOneOpeningsdate(@PathVariable Integer id){
         return openingDateRepository.findById(id).orElseThrow(() -> new OpeningsDateNotFoundException(id));
     }
 
-    @PutMapping({"/{id}", "/"})
+    //ROLE_ADMIN only access
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PutMapping({"/restricted/openingdates/{id}", "/restricted/openingdates/"})
     public OpeningDate replaceOpeningsDate(@RequestBody OpeningDate newOpeningDate,
                                            @PathVariable(required = false) Integer id){
         if (id == null){
@@ -42,7 +46,9 @@ public class OpeningDatesController {
         });
     }
 
-    @DeleteMapping("/{id}")
+    //ROLE_ADMIN only access
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @DeleteMapping("/restricted/openingdates/{id}")
     public void deleteOpeningsDate(@PathVariable Integer id) {
         try {
             openingDateRepository.deleteById(id);

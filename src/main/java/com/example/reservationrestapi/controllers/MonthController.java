@@ -11,13 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/data/month")
 public class MonthController {
 
     @Autowired
     MonthRepository monthRepository;
 
-    @GetMapping({"", "/"})
+    @GetMapping({"/data/month"})
     public List<Month> getMonthNames(){
         return (List<Month>) monthRepository.findAll();
     }

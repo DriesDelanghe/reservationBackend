@@ -8,12 +8,12 @@ import com.example.reservationrestapi.repositories.ReservationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/data/reservation")
 public class reservationController {
 
     Logger logger = LoggerFactory.getLogger(reservationController.class);
@@ -25,17 +25,21 @@ public class reservationController {
     @Autowired
     EmailRepository emailRepository;
 
-    @GetMapping("/all")
+    //ROLE_ADMIN only access
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @GetMapping("/restricted/reservation")
     public List<Reservation> getAllReservations(){
         return (List<Reservation>) reservationRepository.findAll();
     }
 
-    @GetMapping("/{id}")
+    //general login access
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+    @GetMapping("/protected/reservation/{id}")
     public Reservation getOnePerson(@PathVariable Integer id){
         return reservationRepository.findById(id).orElseThrow(() -> new ReservationNotFoundException(id));
     }
 
-    @PutMapping({"/{id}", "/"})
+    @PutMapping({"/data/reservation/{id}", "/data/reservation"})
     public Reservation replaceReservation(@RequestBody Reservation newReservation,
                                           @PathVariable(required = false) Integer id){
 
@@ -58,7 +62,8 @@ public class reservationController {
         });
     }
 
-    @DeleteMapping("/{id}")
+    //general login access
+    @DeleteMapping("/protected/reservation/{id}")
     public void deleteReservation(@PathVariable Integer id){
         try{
             reservationRepository.deleteById(id);

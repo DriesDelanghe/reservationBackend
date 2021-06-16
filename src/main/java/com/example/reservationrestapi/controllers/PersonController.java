@@ -4,28 +4,32 @@ import com.example.reservationrestapi.exceptions.person.PersonNotFoundException;
 import com.example.reservationrestapi.model.Person;
 import com.example.reservationrestapi.repositories.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/data/person")
 public class PersonController {
 
     @Autowired
     PersonRepository personRepository;
 
-    @GetMapping("/all")
+    //ROLE_ADMIN only access
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @GetMapping("/restricted/person")
     public List<Person> GetAllPeople() {
         return (List<Person>) personRepository.findAll();
     }
 
-    @GetMapping({"/{id}", "/"})
+    //general login access
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+    @GetMapping({"/protected/person/{id}"})
     public Person getOnePerson(@PathVariable Integer id) {
         return personRepository.findById(id).orElseThrow(() -> new PersonNotFoundException(id));
     }
 
-    @PutMapping({"/{id}", ""})
+    @PutMapping({"/data/person/{id}", "/data/person"})
     public Person replacePerson(@RequestBody Person newPerson,
                                 @PathVariable(required = false) Integer id) {
         if (id == null) {
@@ -41,7 +45,9 @@ public class PersonController {
         });
     }
 
-    @DeleteMapping("/{id}")
+    //general login access
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+    @DeleteMapping("/protected/person/{id}")
     public void deletePerson(@PathVariable Integer id) {
         try {
             personRepository.deleteById(id);

@@ -16,14 +16,12 @@ import java.util.Calendar;
 import java.util.List;
 
 @RestController
-@RequestMapping("/data/period")
 public class PeriodController {
 
     @Autowired
     OpeningDateRepository openingDateRepository;
-    Logger logger = LoggerFactory.getLogger(PeriodController.class);
 
-    @GetMapping("/all")
+    @GetMapping("/data/period")
     public ArrayList<ArrayList<String>> getPeriodMatrix() {
         ArrayList<ArrayList<String>> periodMatrix = new ArrayList<>();
         List<OpeningDate> openingDates = (List<OpeningDate>) openingDateRepository.findAll();
