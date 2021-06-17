@@ -17,7 +17,6 @@ public class RestAuthEntryPoint implements AuthenticationEntryPoint {
             HttpServletRequest request,
             HttpServletResponse response,
             AuthenticationException authException) throws IOException {
-
         // send error response to the client (401 unauthorized)
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
     }
