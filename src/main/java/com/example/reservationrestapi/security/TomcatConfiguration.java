@@ -1,4 +1,4 @@
-package com.example.reservationrestapi.security;
+/*package com.example.reservationrestapi.security;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.Rfc6265CookieProcessor;
@@ -39,4 +39,4 @@ public class TomcatConfiguration {
         };
     }
 
-}
+}*/

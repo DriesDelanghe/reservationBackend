@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -28,6 +29,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     private CsrfTokenRepository csrfTokenRepository;
 
+    @Autowired
+    RestAuthEntryPoint restAuthEntryPoint;
+
     @Value("${URL_CLIENT}")
     private String urlClient;
 
@@ -36,13 +40,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.cors();
         //http.csrf().disable(); DOE DIT ZEKER NIET!!!!
         http.csrf().csrfTokenRepository(csrfTokenRepository);
-        http.authorizeRequests().antMatchers("/proctected/**").hasAnyRole("USER", "ADMIN")
-                .and()
-                .authorizeRequests().antMatchers("/restricted/**").hasRole("ADMIN")
-                .and()
-                .authorizeRequests().antMatchers("/data/**").permitAll();
+        http.authorizeRequests().antMatchers("/restricted/**").hasRole("ADMIN");
+        http.authorizeRequests().antMatchers("/protected/**").hasAnyRole("ADMIN", "USER");
+        http.authorizeRequests().antMatchers("/data/**").permitAll();
+        http.exceptionHandling().authenticationEntryPoint(restAuthEntryPoint);
+        http.formLogin().loginProcessingUrl("/login");
         http.httpBasic();
-        //http.formLogin();
+        http.formLogin();
         http.csrf().ignoringAntMatchers("/h2-console/**");
         http.headers().frameOptions().sameOrigin();
     }
@@ -77,7 +81,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         // setAllowedHeaders is important! Without it, OPTIONS preflight request
         // will fail with 403 Invalid CORS request
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "content-type", "x-xsrf-token", "X-Requested-With", CrossDomainCsrfTokenRepository.XSRF_HEADER_NAME));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "x-xsrf-token", "X-Requested-With", CrossDomainCsrfTokenRepository.XSRF_HEADER_NAME));
 
         //the custom header XSRF_HEADER_NAME contains the csrf-token because a client on a different domain can not read the csrf-cookie
         //this header is set in CrossDomainCsrfTokenRepository
