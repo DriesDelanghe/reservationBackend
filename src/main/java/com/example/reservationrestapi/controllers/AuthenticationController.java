@@ -30,9 +30,9 @@ public class AuthenticationController {
         return new AuthenticationBean(principal.getName());
     }
     @GetMapping("/protected/account")
-    public Account getAccount(@RequestParam String username){
-        logger.info(accountRepository.findAccountByUsername(username).toString());
-        return accountRepository.findAccountByUsername(username);
+    public Account getAccount(Principal principal){
+        logger.info(accountRepository.findAccountByUsername(principal.getName()).toString());
+        return accountRepository.findAccountByUsername(principal.getName());
     }
 
     @Data

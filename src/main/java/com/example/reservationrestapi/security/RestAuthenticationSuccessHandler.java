@@ -22,8 +22,9 @@ public class RestAuthenticationSuccessHandler implements AuthenticationSuccessHa
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+        response.setStatus(HttpServletResponse.SC_OK);
+        /*        RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
         logger.info(request.getParameter("username"));
-        redirectStrategy.sendRedirect(request, response, "http://localhost:3000/protected/account?username=" + request.getParameter("username"));
+        redirectStrategy.sendRedirect(request, response, "http://localhost:3000/protected/account?username=" + request.getParameter("username"));*/
     }
 }
