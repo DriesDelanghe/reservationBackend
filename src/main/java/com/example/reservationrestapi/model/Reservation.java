@@ -18,6 +18,7 @@ public class Reservation {
     private List<Person> personList;
     private boolean confirmation = false;
 
+
     public Reservation() {
     }
 

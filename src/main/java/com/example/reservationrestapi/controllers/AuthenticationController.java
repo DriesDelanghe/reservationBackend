@@ -27,7 +27,13 @@ public class AuthenticationController {
     @GetMapping("/authenticate")
     public AuthenticationBean authenticate(Principal principal) {
         log.info("##### authenticate");
-        return new AuthenticationBean(principal.getName());
+        if (principal != null) {
+            Account u = accountRepository.findAccountByUsername(principal.getName());
+            if (u != null) {
+                return new AuthenticationBean(u.getUsername(), u.getRole());
+            }
+        }
+        return new AuthenticationBean("anonymous", "ANONYMOUS");
     }
     @GetMapping("/protected/account")
     public Account getAccount(Principal principal){
@@ -39,6 +45,7 @@ public class AuthenticationController {
     @AllArgsConstructor
     class AuthenticationBean {
         private String username;
+        private String role;
     }
 
 

@@ -2,10 +2,8 @@ package com.example.reservationrestapi.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Account {
@@ -17,14 +15,19 @@ public class Account {
     @JsonIgnore
     private String password;
     private String role;
+    private String email;
+    @OneToMany
+    private List<Reservation> reservations;
 
-    public Account() {
-    }
 
-    public Account(String username, String password, String role) {
+    public Account(String username, String password, String role, String email) {
         this.username = username;
         this.password = password;
         this.role = role;
+        this.email = email;
+    }
+
+    public Account() {
     }
 
     public Long getId() {
@@ -57,6 +60,22 @@ public class Account {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public List<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(List<Reservation> reservations) {
+        this.reservations = reservations;
     }
 
     @Override
