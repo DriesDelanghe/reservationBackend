@@ -26,7 +26,6 @@ public class AuthenticationController {
 
     @GetMapping("/authenticate")
     public AuthenticationBean authenticate(Principal principal) {
-        log.info("##### authenticate");
         if (principal != null) {
             Account u = accountRepository.findAccountByUsername(principal.getName());
             if (u != null) {
@@ -34,11 +33,6 @@ public class AuthenticationController {
             }
         }
         return new AuthenticationBean("anonymous", "ANONYMOUS");
-    }
-    @GetMapping("/protected/account")
-    public Account getAccount(Principal principal){
-        logger.info(accountRepository.findAccountByUsername(principal.getName()).toString());
-        return accountRepository.findAccountByUsername(principal.getName());
     }
 
     @Data

@@ -1,6 +1,9 @@
 package com.example.reservationrestapi.model;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -17,6 +20,9 @@ public class Reservation {
     @OneToMany
     private List<Person> personList;
     private boolean confirmation = false;
+    @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
+    private Date reservationDate;
 
 
     public Reservation() {
@@ -56,6 +62,14 @@ public class Reservation {
 
     public boolean isConfirmation() {
         return confirmation;
+    }
+
+    public Date getReservationDate() {
+        return reservationDate;
+    }
+
+    public void setReservationDate(Date reservationDate) {
+        this.reservationDate = reservationDate;
     }
 
     public void setConfirmation(boolean confirmation) {

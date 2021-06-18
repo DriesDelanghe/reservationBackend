@@ -14,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -56,25 +57,37 @@ public class reservationController {
 
     @PutMapping({"/data/reservation/{id}", "/data/reservation"})
     public Reservation replaceReservation(@RequestBody Reservation newReservation,
-                                          @PathVariable(required = false) Integer id){
+                                          @PathVariable(required = false) Integer id,
+                                          Principal principal){
 
-        logger.info(String.valueOf(newReservation));
         if (id == null){
-            personRepository.saveAll(newReservation.getPersonList());
-            if (newReservation.isConfirmation()){
-                emailRepository.save(newReservation.getEmail());
-            }
-            return reservationRepository.save(newReservation);
+            return saveNewReservation(newReservation, principal);
         }
+
         return reservationRepository.findById(id).map(reservation -> {
             reservation.setPersonList(newReservation.getPersonList());
             reservation.setEmail(reservation.getEmail());
             reservation.setOpeningDateList(reservation.getOpeningDateList());
+            reservation.setReservationDate(new Date());
+            if (principal != null){
+                Account u = accountRepository.findAccountByUsername(principal.getName());
+                u.getReservations().add(reservation);
+            }
             return reservationRepository.save(reservation);
-        }).orElseGet(() -> {
-            newReservation.setId(id);
-            return reservationRepository.save(newReservation);
-        });
+        }).orElseGet(() -> saveNewReservation(newReservation, principal));
+    }
+
+    public Reservation saveNewReservation(Reservation newReservation, Principal principal){
+        personRepository.saveAll(newReservation.getPersonList());
+        if (newReservation.isConfirmation()){
+            emailRepository.save(newReservation.getEmail());
+        }
+        if (principal != null){
+            Account u = accountRepository.findAccountByUsername(principal.getName());
+            u.getReservations().add(newReservation);
+        }
+        newReservation.setReservationDate(new Date());
+        return reservationRepository.save(newReservation);
     }
 
     //general login access
