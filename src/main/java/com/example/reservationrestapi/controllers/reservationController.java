@@ -11,14 +11,12 @@ import com.example.reservationrestapi.repositories.ReservationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 public class reservationController {
@@ -115,7 +113,6 @@ public class reservationController {
                 logger.info(account.getUsername());
                 account.getReservations().remove(reservation);
                 accountRepository.save(account);
-
                 reservation.setOpeningDateList(null);
                 reservationRepository.save(reservation);
                 reservationRepository.delete(reservation);
