@@ -80,9 +80,7 @@ public class reservationController {
             Reservation savedReservation = reservationRepository.save(reservation);
 
             personList.forEach(person -> {
-                logger.info(String.format("checking for %s %s", person.getFirstName(), person.getLastName()));
                 if (!reservation.getPersonList().contains(person)){
-                    logger.info("TO THE GULAG");
                     personRepository.delete(person);
                 }
             });
