@@ -17,14 +17,12 @@ public class EmailController {
 
     //ROLE_ADMIN only access
     @GetMapping("/restricted/email")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public List<Email> getAllEmail(){
         return (List<Email>) emailRepository.findAll();
     }
 
     //general login access
     @GetMapping("/protected/email/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public Email getOneEmail(@PathVariable Integer id){
         return emailRepository.findById(id).orElseThrow(() -> new EmailNotFoundException(id));
     }
@@ -46,7 +44,6 @@ public class EmailController {
 
     //general login access
     @DeleteMapping("/protected/email/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public void deleteEmail(@PathVariable Integer id){
         try {
             emailRepository.deleteById(id);

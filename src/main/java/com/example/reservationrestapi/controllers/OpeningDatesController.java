@@ -22,14 +22,12 @@ public class OpeningDatesController {
     }
 
     //ROLE_ADMIN only access
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("/restricted/openingdates/{id}")
     public OpeningDate getOneOpeningsdate(@PathVariable Integer id){
         return openingDateRepository.findById(id).orElseThrow(() -> new OpeningsDateNotFoundException(id));
     }
 
     //ROLE_ADMIN only access
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PutMapping({"/restricted/openingdates/{id}", "/restricted/openingdates/"})
     public OpeningDate replaceOpeningsDate(@RequestBody OpeningDate newOpeningDate,
                                            @PathVariable(required = false) Integer id){
@@ -47,7 +45,6 @@ public class OpeningDatesController {
     }
 
     //ROLE_ADMIN only access
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @DeleteMapping("/restricted/openingdates/{id}")
     public void deleteOpeningsDate(@PathVariable Integer id) {
         try {

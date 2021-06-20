@@ -46,26 +46,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers("/protected/**").hasAnyRole("ADMIN", "USER");
         http.authorizeRequests().antMatchers("/restricted/**").hasRole("ADMIN");
         http.exceptionHandling().authenticationEntryPoint(restAuthEntryPoint);
-        http.formLogin().loginProcessingUrl("/login");
-        http.formLogin().failureHandler(new RestAuthenticationFailureHandler());
-        http.formLogin().successHandler(new RestAuthenticationSuccessHandler());
         http.httpBasic();
-        http.formLogin();
         http.csrf().ignoringAntMatchers("/h2-console/**");
         http.csrf().ignoringAntMatchers("/authenticate");
         http.headers().frameOptions().sameOrigin();
     }
-
-/*    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth)
-            throws Exception {
-        auth.jdbcAuthentication()
-                .dataSource(dataSource)
-                .usersByUsernameQuery(
-                        "select username,password,true from Account where username = ?")
-                .authoritiesByUsernameQuery(
-                        "select username, role from Account where username = ?");
-    }*/
 
     @Override
     protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
@@ -80,9 +65,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
+/*    @Bean
     CsrfTokenRepository csrfTokenRepository() {
         return new CrossDomainCsrfTokenRepository();
-    }
+    }*/
 
 }

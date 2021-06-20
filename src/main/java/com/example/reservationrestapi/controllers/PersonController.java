@@ -16,14 +16,12 @@ public class PersonController {
     PersonRepository personRepository;
 
     //ROLE_ADMIN only access
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("/restricted/person")
     public List<Person> GetAllPeople() {
         return (List<Person>) personRepository.findAll();
     }
 
     //general login access
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping({"/protected/person/{id}"})
     public Person getOnePerson(@PathVariable Integer id) {
         return personRepository.findById(id).orElseThrow(() -> new PersonNotFoundException(id));
@@ -46,7 +44,6 @@ public class PersonController {
     }
 
     //general login access
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @DeleteMapping("/protected/person/{id}")
     public void deletePerson(@PathVariable Integer id) {
         try {

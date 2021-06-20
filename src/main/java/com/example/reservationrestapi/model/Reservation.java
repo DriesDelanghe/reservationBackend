@@ -17,7 +17,7 @@ public class Reservation {
     private Email email;
     @ManyToMany
     private List<OpeningDate> openingDateList;
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     private List<Person> personList;
     private boolean confirmation = false;
     @Temporal(TemporalType.DATE)

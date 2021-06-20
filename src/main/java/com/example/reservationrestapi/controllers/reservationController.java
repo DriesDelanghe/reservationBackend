@@ -2,6 +2,7 @@ package com.example.reservationrestapi.controllers;
 
 import com.example.reservationrestapi.exceptions.reservation.ReservationNotFoundException;
 import com.example.reservationrestapi.model.Account;
+import com.example.reservationrestapi.model.Person;
 import com.example.reservationrestapi.model.Reservation;
 import com.example.reservationrestapi.repositories.AccountRepository;
 import com.example.reservationrestapi.repositories.EmailRepository;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 public class reservationController {
@@ -32,23 +35,20 @@ public class reservationController {
     AccountRepository accountRepository;
 
     //ROLE_ADMIN only access
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("/restricted/reservation")
-    public List<Reservation> getAllReservations(){
+    public List<Reservation> getAllReservations() {
         return (List<Reservation>) reservationRepository.findAll();
     }
 
     //general login access
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/protected/reservation/{id}")
-    public Reservation getOnePerson(@PathVariable Integer id){
+    public Reservation getOnePerson(@PathVariable Integer id) {
         return reservationRepository.findById(id).orElseThrow(() -> new ReservationNotFoundException(id));
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN, ROLE_USER')")
     @GetMapping("/protected/reservation/user")
-    public List<Reservation> getReservationsUser(Principal principal){
-        if (principal != null){
+    public List<Reservation> getReservationsUser(Principal principal) {
+        if (principal != null) {
             Account u = accountRepository.findAccountByUsername(principal.getName());
             return u.getReservations();
         }
@@ -58,31 +58,45 @@ public class reservationController {
     @PutMapping({"/data/reservation/{id}", "/data/reservation"})
     public Reservation replaceReservation(@RequestBody Reservation newReservation,
                                           @PathVariable(required = false) Integer id,
-                                          Principal principal){
+                                          Principal principal) {
 
-        if (id == null){
+        if (id == null) {
             return saveNewReservation(newReservation, principal);
         }
 
         return reservationRepository.findById(id).map(reservation -> {
+            List<Person> personList = reservation.getPersonList();
             reservation.setPersonList(newReservation.getPersonList());
-            reservation.setEmail(reservation.getEmail());
-            reservation.setOpeningDateList(reservation.getOpeningDateList());
-            reservation.setReservationDate(new Date());
-            if (principal != null){
-                Account u = accountRepository.findAccountByUsername(principal.getName());
-                u.getReservations().add(reservation);
+
+            personRepository.saveAll(reservation.getPersonList());
+            if (newReservation.isConfirmation()) {
+                reservation.setConfirmation(newReservation.isConfirmation());
+                reservation.setEmail(emailRepository.save(newReservation.getEmail()));
+            }else{
+                reservation.setConfirmation(false);
+                reservation.setEmail(null);
             }
-            return reservationRepository.save(reservation);
+            reservation.setOpeningDateList(newReservation.getOpeningDateList());
+            Reservation savedReservation = reservationRepository.save(reservation);
+
+            personList.forEach(person -> {
+                logger.info(String.format("checking for %s %s", person.getFirstName(), person.getLastName()));
+                if (!reservation.getPersonList().contains(person)){
+                    logger.info("TO THE GULAG");
+                    personRepository.delete(person);
+                }
+            });
+
+            return savedReservation;
         }).orElseGet(() -> saveNewReservation(newReservation, principal));
     }
 
-    public Reservation saveNewReservation(Reservation newReservation, Principal principal){
+    public Reservation saveNewReservation(Reservation newReservation, Principal principal) {
         personRepository.saveAll(newReservation.getPersonList());
-        if (newReservation.isConfirmation()){
+        if (newReservation.isConfirmation()) {
             emailRepository.save(newReservation.getEmail());
         }
-        if (principal != null){
+        if (principal != null) {
             Account u = accountRepository.findAccountByUsername(principal.getName());
             u.getReservations().add(newReservation);
         }
@@ -92,10 +106,27 @@ public class reservationController {
 
     //general login access
     @DeleteMapping("/protected/reservation/{id}")
-    public void deleteReservation(@PathVariable Integer id){
-        try{
-            reservationRepository.deleteById(id);
-        }catch (Exception e){
+    public void deleteReservation(@PathVariable Integer id,
+                                  Principal principal) {
+        try {
+            Optional<Reservation> optionalReservation = reservationRepository.findById(id);
+            if (optionalReservation.isPresent()) {
+                Reservation reservation = optionalReservation.get();
+                List<Person> personList = reservation.getPersonList();
+                Account account = accountRepository.findAccountByUsername(principal.getName());
+                logger.info(account.getUsername());
+                account.getReservations().remove(reservation);
+                accountRepository.save(account);
+
+                reservation.setOpeningDateList(null);
+                reservationRepository.save(reservation);
+                reservationRepository.delete(reservation);
+                personRepository.deleteAll(personList);
+            } else {
+                throw new ReservationNotFoundException(id);
+            }
+        } catch (Exception e) {
+            logger.warn(e.getMessage());
             throw new ReservationNotFoundException(id);
         }
     }
