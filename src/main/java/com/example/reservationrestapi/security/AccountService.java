@@ -20,13 +20,13 @@ public class AccountService {
     @PostConstruct
     public void initialize(){
         if (accountRepository.findAccountByUsername("admin_tjok") == null){
-            save(new Account("admin_tjok", "test", "ADMIN", "tjok2540@gmail.com"));
+            save(new Account("admin_tjok", "test", "ADMIN", "tjok2540@gmail.com", false));
         }
         if(accountRepository.findAccountByUsername("anonymous") == null) {
-            save(new Account("anonymous", "Pr0t3ct3d_", "ANONYMOUS", null));
+            save(new Account("anonymous", "Pr0t3ct3d_", "ANONYMOUS", null, false));
         }
         if (accountRepository.findAccountByUsername("driesD") == null) {
-            save(new Account("driesD", "test", "USER", "dries.delanghe.1998@gmail.com"));
+            save(new Account("driesD", "test", "USER", "dries.delanghe.1998@gmail.com", true));
         }
     }
 

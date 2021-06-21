@@ -16,6 +16,7 @@ public class Account {
     private String password;
     private String role;
     private String email;
+    private boolean useEmail;
     @OneToMany
     private List<Reservation> reservations;
 
@@ -25,6 +26,14 @@ public class Account {
         this.password = password;
         this.role = role;
         this.email = email;
+    }
+
+    public Account(String username, String password, String role, String email, boolean useEmail) {
+        this.username = username;
+        this.password = password;
+        this.role = role;
+        this.email = email;
+        this.useEmail = useEmail;
     }
 
     public Account() {
@@ -72,6 +81,14 @@ public class Account {
 
     public List<Reservation> getReservations() {
         return reservations;
+    }
+
+    public boolean isUseEmail() {
+        return useEmail;
+    }
+
+    public void setUseEmail(boolean useEmail) {
+        this.useEmail = useEmail;
     }
 
     public void setReservations(List<Reservation> reservations) {

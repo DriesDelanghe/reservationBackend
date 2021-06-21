@@ -29,10 +29,10 @@ public class AuthenticationController {
         if (principal != null) {
             Account u = accountRepository.findAccountByUsername(principal.getName());
             if (u != null) {
-                return new AuthenticationBean(u.getUsername(), u.getRole());
+                return new AuthenticationBean(u.getUsername(), u.getRole(), u.isUseEmail(), u.getEmail());
             }
         }
-        return new AuthenticationBean("anonymous", "ANONYMOUS");
+        return new AuthenticationBean("anonymous", "ANONYMOUS", false, "");
     }
 
     @Data
@@ -40,6 +40,8 @@ public class AuthenticationController {
     class AuthenticationBean {
         private String username;
         private String role;
+        private boolean useEmail;
+        private String email;
     }
 
 
