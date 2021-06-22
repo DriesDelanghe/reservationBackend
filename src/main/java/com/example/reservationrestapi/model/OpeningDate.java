@@ -17,7 +17,7 @@ public class OpeningDate {
     private Date openingDate;
     private String openingHour;
     private String closingHour;
-    @Column(columnDefinition = "integer default 2")
+    @Column(columnDefinition = "integer default 180")
     private Integer reservationLimit;
     @Column(columnDefinition = "integer default 0")
     private Integer reservationAmount;
