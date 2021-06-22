@@ -5,7 +5,6 @@ import com.example.reservationrestapi.exceptions.openingdate.OpeningsDateNotFoun
 import com.example.reservationrestapi.model.OpeningDate;
 import com.example.reservationrestapi.repositories.OpeningDateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,8 +16,13 @@ public class OpeningDatesController {
     OpeningDateRepository openingDateRepository;
 
     @GetMapping("/data/openingdates")
-    public List<OpeningDate> getAllOpeningsDates(){
-        return (List<OpeningDate>) openingDateRepository.findAll();
+    public List<OpeningDate> getAllActiveOpeningsDates(){
+        return openingDateRepository.getActiveDates();
+    }
+
+    @GetMapping("/data/openingdates/inactive")
+    public List<OpeningDate> getAllInactiveOpeningDates(){
+        return openingDateRepository.getInactiveDates();
     }
 
     //ROLE_ADMIN only access

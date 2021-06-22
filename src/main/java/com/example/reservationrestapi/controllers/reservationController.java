@@ -1,22 +1,24 @@
 package com.example.reservationrestapi.controllers;
 
+import com.example.reservationrestapi.exceptions.reservation.ReservationFullException;
 import com.example.reservationrestapi.exceptions.reservation.ReservationNotFoundException;
 import com.example.reservationrestapi.model.Account;
+import com.example.reservationrestapi.model.OpeningDate;
 import com.example.reservationrestapi.model.Person;
 import com.example.reservationrestapi.model.Reservation;
-import com.example.reservationrestapi.repositories.AccountRepository;
-import com.example.reservationrestapi.repositories.EmailRepository;
-import com.example.reservationrestapi.repositories.PersonRepository;
-import com.example.reservationrestapi.repositories.ReservationRepository;
+import com.example.reservationrestapi.repositories.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @RestController
 public class reservationController {
@@ -31,6 +33,8 @@ public class reservationController {
     EmailRepository emailRepository;
     @Autowired
     AccountRepository accountRepository;
+    @Autowired
+    OpeningDateRepository openingDateRepository;
 
     //ROLE_ADMIN only access
     @GetMapping("/restricted/reservation")
@@ -57,20 +61,32 @@ public class reservationController {
     public Reservation replaceReservation(@RequestBody Reservation newReservation,
                                           @PathVariable(required = false) Integer id,
                                           Principal principal) {
+        ArrayList<OpeningDate> openingDateArrayList = new ArrayList<>();
+        newReservation.getOpeningDateList().forEach(openingDate -> openingDateArrayList.add(openingDateRepository.findById(openingDate.getId()).get()));
+        AtomicBoolean sizeExceeded = new AtomicBoolean(false);
+        openingDateArrayList.forEach(openingDate -> {
+            if ((openingDate.getReservationLimit() - openingDate.getReservationAmount()) < newReservation.getPersonList().size()) {
+                logger.warn("this is not right");
+                sizeExceeded.set(true);
+            }
+        });
+        if (sizeExceeded.get()) {
+            throw new ReservationFullException(newReservation.getId());
 
+        }
         if (id == null) {
             return saveNewReservation(newReservation, principal);
         }
 
         return reservationRepository.findById(id).map(reservation -> {
-            List<Person> personList = reservation.getPersonList();
+            List<Person> personList = reservationRepository.GetPeople(reservation.getId());
+            List<OpeningDate> openingDateList = reservationRepository.getOpeningDates(reservation.getId());
             reservation.setPersonList(newReservation.getPersonList());
-
             personRepository.saveAll(reservation.getPersonList());
             if (newReservation.isConfirmation()) {
                 reservation.setConfirmation(newReservation.isConfirmation());
                 reservation.setEmail(emailRepository.save(newReservation.getEmail()));
-            }else{
+            } else {
                 reservation.setConfirmation(false);
                 reservation.setEmail(null);
             }
@@ -78,11 +94,11 @@ public class reservationController {
             Reservation savedReservation = reservationRepository.save(reservation);
 
             personList.forEach(person -> {
-                if (!reservation.getPersonList().contains(person)){
+                if (!reservation.getPersonList().contains(person)) {
                     personRepository.delete(person);
                 }
             });
-
+            openingDateList.forEach(this::updateCountOpeningdate);
             return savedReservation;
         }).orElseGet(() -> saveNewReservation(newReservation, principal));
     }
@@ -97,7 +113,16 @@ public class reservationController {
             u.getReservations().add(newReservation);
         }
         newReservation.setReservationDate(new Date());
-        return reservationRepository.save(newReservation);
+        Reservation reservation = reservationRepository.save(newReservation);
+        reservation.getOpeningDateList().forEach(this::updateCountOpeningdate);
+        return reservation;
+    }
+
+    public void updateCountOpeningdate(OpeningDate openingDate) {
+        Integer count = openingDateRepository.amountOfReservations(openingDate.getId());
+        logger.info(String.format("setting count of %s to %d", new SimpleDateFormat("dd/MM/yyyy").format(openingDate.getOpeningDate()), count));
+        openingDate.setReservationAmount(count);
+        openingDateRepository.save(openingDate);
     }
 
     //general login access
@@ -109,14 +134,17 @@ public class reservationController {
             if (optionalReservation.isPresent()) {
                 Reservation reservation = optionalReservation.get();
                 List<Person> personList = reservation.getPersonList();
+                reservation.getOpeningDateList().forEach(openingDate -> {
+                    openingDate.setReservationAmount(openingDate.getReservationAmount() - reservation.getPersonList().size());
+                    openingDateRepository.save(openingDate);
+                });
                 Account account = accountRepository.findAccountByUsername(principal.getName());
                 logger.info(account.getUsername());
                 account.getReservations().remove(reservation);
                 accountRepository.save(account);
-                reservation.setOpeningDateList(null);
-                reservationRepository.save(reservation);
                 reservationRepository.delete(reservation);
                 personRepository.deleteAll(personList);
+
             } else {
                 throw new ReservationNotFoundException(id);
             }

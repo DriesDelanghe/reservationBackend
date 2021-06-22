@@ -15,4 +15,11 @@ public class ReservationNotFoundAdvice {
     public String reservationNotFoundHandler(ReservationNotFoundException ex){
         return ex.getMessage();
     }
+
+    @ResponseBody
+    @ExceptionHandler(ReservationFullException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public String reservationFullHandler(ReservationFullException ex){
+        return ex.getMessage();
+    }
 }

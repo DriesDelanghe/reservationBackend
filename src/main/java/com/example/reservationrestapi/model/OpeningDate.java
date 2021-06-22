@@ -12,12 +12,16 @@ public class OpeningDate {
     @SequenceGenerator(name = "opening_generator", sequenceName = "op_seq", allocationSize = 1)
     @Id
     private Integer id;
-
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date openingDate;
     private String openingHour;
     private String closingHour;
+    @Column(columnDefinition = "integer default 2")
+    private Integer reservationLimit;
+    @Column(columnDefinition = "integer default 0")
+    private Integer reservationAmount;
+    private boolean activeDate;
 
     public OpeningDate() {
     }
@@ -58,5 +62,29 @@ public class OpeningDate {
 
     public void setClosingHour(String closingHour) {
         this.closingHour = closingHour;
+    }
+
+    public Integer getReservationLimit() {
+        return reservationLimit;
+    }
+
+    public void setReservationLimit(Integer reservationLimit) {
+        this.reservationLimit = reservationLimit;
+    }
+
+    public Integer getReservationAmount() {
+        return reservationAmount;
+    }
+
+    public void setReservationAmount(Integer reservationAmount) {
+        this.reservationAmount = reservationAmount;
+    }
+
+    public boolean isActiveDate() {
+        return activeDate;
+    }
+
+    public void setActiveDate(boolean activeDate) {
+        this.activeDate = activeDate;
     }
 }
