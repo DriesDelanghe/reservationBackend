@@ -16,6 +16,10 @@ public class Email {
     public Email() {
     }
 
+    public Email(String email) {
+        this.email = email;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -30,5 +34,13 @@ public class Email {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    @Override
+    public String toString() {
+        return "Email{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                '}';
     }
 }

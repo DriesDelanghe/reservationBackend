@@ -33,8 +33,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     RestAuthEntryPoint restAuthEntryPoint;
 
-    @Value("${URL_CLIENT}")
-    private String urlClient;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {

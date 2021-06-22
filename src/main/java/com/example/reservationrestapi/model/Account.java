@@ -1,7 +1,5 @@
 package com.example.reservationrestapi.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javax.persistence.*;
 import java.util.List;
 
@@ -12,27 +10,24 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String username;
-    @JsonIgnore
     private String password;
     private String role;
-    private String email;
+    @OneToOne
+    private Email email;
     private boolean useEmail;
     @OneToMany
     private List<Reservation> reservations;
 
-
-    public Account(String username, String password, String role, String email) {
+    public Account(String username, String password, String role, boolean useEmail) {
         this.username = username;
         this.password = password;
         this.role = role;
-        this.email = email;
+        this.useEmail = useEmail;
     }
 
-    public Account(String username, String password, String role, String email, boolean useEmail) {
+    public Account(String username, String password, boolean useEmail) {
         this.username = username;
         this.password = password;
-        this.role = role;
-        this.email = email;
         this.useEmail = useEmail;
     }
 
@@ -71,11 +66,11 @@ public class Account {
         this.role = role;
     }
 
-    public String getEmail() {
+    public Email getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(Email email) {
         this.email = email;
     }
 
@@ -102,6 +97,8 @@ public class Account {
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", role='" + role + '\'' +
+                ", email='" + email + '\'' +
+                ", useEmail=" + useEmail +
                 '}';
     }
 }
