@@ -1,5 +1,6 @@
 package com.example.reservationrestapi.controllers;
 
+import com.example.reservationrestapi.exceptions.reservation.ReservationByOpeningDateException;
 import com.example.reservationrestapi.exceptions.reservation.ReservationFullException;
 import com.example.reservationrestapi.exceptions.reservation.ReservationNotFoundException;
 import com.example.reservationrestapi.model.Account;
@@ -14,10 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @RestController
@@ -40,6 +38,16 @@ public class reservationController {
     @GetMapping("/restricted/reservation")
     public List<Reservation> getAllReservations() {
         return (List<Reservation>) reservationRepository.findAll();
+    }
+
+    @GetMapping("/restricted/reservation/{openingDateId}")
+    public List<Reservation> getAllReservationsFromOpeningDate(@PathVariable Integer openingDateId){
+        try {
+            return reservationRepository.getAllReservationsByOpeningDate(openingDateRepository.findById(openingDateId).get());
+        }catch (Exception e){
+            logger.info(Arrays.toString(e.getStackTrace()));
+            throw new ReservationByOpeningDateException(openingDateId);
+        }
     }
 
     //general login access

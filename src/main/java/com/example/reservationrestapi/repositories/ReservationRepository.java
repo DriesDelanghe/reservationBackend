@@ -16,4 +16,7 @@ public interface ReservationRepository extends CrudRepository<Reservation, Integ
 
     @Query("select pe from Reservation re join re.personList pe where re.id = :id")
     List<Person> GetPeople(@Param("id") Integer reservationId);
+
+    @Query("select re from Reservation re join re.openingDateList op where :openingDate in (op)")
+    List<Reservation> getAllReservationsByOpeningDate(@Param("openingDate") OpeningDate openingDate);
 }

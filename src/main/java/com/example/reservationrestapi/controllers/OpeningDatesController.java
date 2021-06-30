@@ -20,7 +20,7 @@ public class OpeningDatesController {
         return openingDateRepository.getActiveDates();
     }
 
-    @GetMapping("/data/openingdates/inactive")
+    @GetMapping("/restricted/openingdates/inactive")
     public List<OpeningDate> getAllInactiveOpeningDates(){
         return openingDateRepository.getInactiveDates();
     }

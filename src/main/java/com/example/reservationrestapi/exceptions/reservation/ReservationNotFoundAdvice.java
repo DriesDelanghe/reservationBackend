@@ -22,4 +22,11 @@ public class ReservationNotFoundAdvice {
     public String reservationFullHandler(ReservationFullException ex){
         return ex.getMessage();
     }
+
+    @ResponseBody
+    @ExceptionHandler(ReservationByOpeningDateException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String reservationByOpeningDateNotFoundHandler(ReservationNotFoundException ex){
+        return ex.getMessage();
+    }
 }
