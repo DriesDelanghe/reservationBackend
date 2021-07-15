@@ -22,6 +22,7 @@ public class OpeningDate {
     @Column(columnDefinition = "integer default 100")
     private Integer reservationAmount;
     private boolean activeDate;
+    private boolean removed;
 
     public OpeningDate() {
     }
@@ -86,5 +87,27 @@ public class OpeningDate {
 
     public void setActiveDate(boolean activeDate) {
         this.activeDate = activeDate;
+    }
+
+    public boolean isRemoved() {
+        return removed;
+    }
+
+    public void setRemoved(boolean removed) {
+        this.removed = removed;
+    }
+
+    @Override
+    public String toString() {
+        return "OpeningDate{" +
+                "id=" + id +
+                ", openingDate=" + openingDate +
+                ", openingHour='" + openingHour + '\'' +
+                ", closingHour='" + closingHour + '\'' +
+                ", reservationLimit=" + reservationLimit +
+                ", reservationAmount=" + reservationAmount +
+                ", activeDate=" + activeDate +
+                ", removed=" + removed +
+                '}';
     }
 }
