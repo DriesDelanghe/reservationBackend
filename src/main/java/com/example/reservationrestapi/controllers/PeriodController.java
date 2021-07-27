@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -21,12 +22,16 @@ public class PeriodController {
     @Autowired
     OpeningDateRepository openingDateRepository;
 
+    Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @GetMapping("/data/period")
     public ArrayList<ArrayList<String>> getPeriodMatrix() {
         ArrayList<ArrayList<String>> periodMatrix = new ArrayList<>();
-        List<OpeningDate> openingDates = (List<OpeningDate>) openingDateRepository.findAll();
+        List<OpeningDate> openingDates = openingDateRepository.getActiveDates();
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        Collections.sort(openingDates);
 
         Calendar startDate = Calendar.getInstance();
         startDate.setTime(openingDates.get(0).getOpeningDate());

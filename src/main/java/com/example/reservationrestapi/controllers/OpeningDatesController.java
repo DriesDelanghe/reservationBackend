@@ -24,9 +24,14 @@ public class OpeningDatesController {
         return openingDateRepository.getActiveDates();
     }
 
-    @GetMapping("/restricted/openingdates/inactive")
+    @GetMapping("/restricted/openingdates")
+    public List<OpeningDate> getAllOpeningDates() {
+        return openingDateRepository.getOpeningDates();
+    }
+
+    @GetMapping("/restricted/openingdates/removed")
     public List<OpeningDate> getAllInactiveOpeningDates(){
-        return openingDateRepository.getInactiveDates();
+        return openingDateRepository.getRemovedOpeningDates();
     }
 
     //ROLE_ADMIN only access
@@ -45,6 +50,13 @@ public class OpeningDatesController {
         return openingDateRepository.findById(id).map(openingDate -> {
             openingDate.setOpeningHour(newOpeningDate.getOpeningHour());
             openingDate.setClosingHour(newOpeningDate.getClosingHour());
+            openingDate.setOpeningDate(newOpeningDate.getOpeningDate());
+            
+            openingDate.setActiveDate(newOpeningDate.isActiveDate());
+            openingDate.setRemoved(newOpeningDate.isRemoved());
+
+            openingDate.setReservationLimit(newOpeningDate.getReservationLimit());
+
             return openingDateRepository.save(openingDate);
         }).orElseGet(() -> {
             newOpeningDate.setId(id);

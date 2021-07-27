@@ -12,9 +12,12 @@ public interface OpeningDateRepository extends CrudRepository<OpeningDate, Integ
     @Query("select COUNT(pl.id) as amountOfPeople from Reservation re join re.personList pl join re.openingDateList dl where dl in (select op from OpeningDate op where op.id = :id) ")
     Integer amountOfReservations(@Param("id") Integer id);
 
-    @Query("select op from OpeningDate op where op.activeDate = true")
-    List<OpeningDate> getActiveDates();
+    @Query("select op from OpeningDate op where op.removed = false")
+    List<OpeningDate> getOpeningDates();
 
-    @Query("select op from OpeningDate op where op.activeDate = false")
-    List<OpeningDate> getInactiveDates();
+    @Query("select op from OpeningDate op where op.removed = true")
+    List<OpeningDate> getRemovedOpeningDates();
+
+    @Query("select op from OpeningDate op where op.removed = false and op.activeDate = true")
+    List<OpeningDate> getActiveDates();
 }

@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-public class OpeningDate {
+public class OpeningDate implements Comparable<OpeningDate> {
 
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "opening_generator")
     @SequenceGenerator(name = "opening_generator", sequenceName = "op_seq", allocationSize = 1)
@@ -23,6 +23,7 @@ public class OpeningDate {
     private Integer reservationAmount;
     private boolean activeDate;
     private boolean removed;
+    private String eventName;
 
     public OpeningDate() {
     }
@@ -97,6 +98,14 @@ public class OpeningDate {
         this.removed = removed;
     }
 
+    public String getEventName() {
+        return eventName;
+    }
+
+    public void setEventName(String eventName) {
+        this.eventName = eventName;
+    }
+
     @Override
     public String toString() {
         return "OpeningDate{" +
@@ -109,5 +118,10 @@ public class OpeningDate {
                 ", activeDate=" + activeDate +
                 ", removed=" + removed +
                 '}';
+    }
+
+    @Override
+    public int compareTo(OpeningDate o) {
+        return this.getOpeningDate().compareTo(o.getOpeningDate());
     }
 }
