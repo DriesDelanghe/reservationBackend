@@ -51,6 +51,7 @@ public class OpeningDatesController {
             openingDate.setOpeningHour(newOpeningDate.getOpeningHour());
             openingDate.setClosingHour(newOpeningDate.getClosingHour());
             openingDate.setOpeningDate(newOpeningDate.getOpeningDate());
+            openingDate.setEventName(newOpeningDate.getEventName());
             
             openingDate.setActiveDate(newOpeningDate.isActiveDate());
             openingDate.setRemoved(newOpeningDate.isRemoved());
