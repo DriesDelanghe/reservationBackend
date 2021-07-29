@@ -19,7 +19,7 @@ public class OpeningDate implements Comparable<OpeningDate> {
     private String closingHour;
     @Column(columnDefinition = "integer default 180")
     private Integer reservationLimit;
-    @Column(columnDefinition = "integer default 100")
+//    @Column(columnDefinition = "integer default 100")
     private Integer reservationAmount;
     private boolean activeDate;
     private boolean removed;
