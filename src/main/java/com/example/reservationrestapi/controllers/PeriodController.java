@@ -5,9 +5,7 @@ import com.example.reservationrestapi.repositories.OpeningDateRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.text.SimpleDateFormat;
@@ -50,10 +48,61 @@ public class PeriodController {
             referenceDate.add(Calendar.DATE, 1);
         }
         if (!weekDates.isEmpty()) {
-
             periodMatrix.add(weekDates);
         }
 
         return periodMatrix;
+    }
+
+    @GetMapping("/data/calendar/period")
+    public ArrayList<ArrayList<ArrayList<String>>> getPeriodMatrixByMonth() {
+        ArrayList<ArrayList<ArrayList<String>>> monthPeriodMatrix = new ArrayList<>();
+        ArrayList<Calendar> dateList = new ArrayList<>();
+
+        List<OpeningDate> openingDates = openingDateRepository.getActiveDates();
+
+        Collections.sort(openingDates);
+
+        openingDates.forEach(object -> {
+            if (!dateList.stream().anyMatch(calendar -> {
+                Calendar reference = Calendar.getInstance();
+                reference.setTime(object.getOpeningDate());
+                return calendar.get(Calendar.MONTH) == reference.get(Calendar.MONTH);
+            })) {
+                Calendar date = Calendar.getInstance();
+                date.setTime(object.getOpeningDate());
+                dateList.add(date);
+            }
+        });
+
+        Collections.sort(dateList);
+
+        for (Calendar date : dateList) {
+
+            Calendar startDate = Calendar.getInstance();
+            startDate.set(date.get(Calendar.YEAR), date.get(Calendar.MONTH), 1);
+            startDate.add(Calendar.DATE, -(startDate.get(Calendar.DAY_OF_WEEK) > 1 ?
+                    (startDate.get(Calendar.DAY_OF_WEEK) - Calendar.MONDAY) : 6));
+
+            ArrayList<ArrayList<String>> periodMatrix = new ArrayList<>();
+
+            ArrayList<String> weekDays = new ArrayList<>();
+
+            while (startDate.get(Calendar.MONTH) <= date.get(Calendar.MONTH) ||
+                    startDate.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
+                if (!weekDays.isEmpty() && startDate.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY) {
+                    periodMatrix.add(weekDays);
+                    weekDays = new ArrayList<>();
+                }
+                weekDays.add(new SimpleDateFormat("yyyy-MM-dd").format(startDate.getTime()));
+                startDate.add(Calendar.DATE, 1);
+            }
+            if (!weekDays.isEmpty()){
+                periodMatrix.add(weekDays);
+            }
+            monthPeriodMatrix.add(periodMatrix);
+        }
+
+        return monthPeriodMatrix;
     }
 }
