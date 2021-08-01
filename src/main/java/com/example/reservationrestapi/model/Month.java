@@ -6,7 +6,7 @@ import javax.persistence.*;
 public class Month {
 
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "month_generator")
-    @SequenceGenerator(name = "month_generator", sequenceName = "mo_seq", allocationSize = 1, initialValue = 1)
+    @SequenceGenerator(name = "month_generator", sequenceName = "mo_seq", allocationSize = 1, initialValue = 0)
     @Id
     private int id;
     private String monthName;
