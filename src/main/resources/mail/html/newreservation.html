@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title data-th-remove="all">Template for HTML email (editable)</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <style>
+        *, *:before, *:after {
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        p{
+            font-size: 1.2rem;
+        }
+    </style>
+
+</head>
+<body style="padding: 0; margin: 0;">
+<div style="background-color: rgb(64,22,181); height: 150px; padding: 0; margin: 0; display: flex; justify-content: center;
+border: 2px solid rgb(56,12,126); border-radius: 0 0 2rem 2rem; box-shadow: 0 5px 10px 2px rgba(20,20,20, 0.3)">
+    <img style="background-color: rgb(30,30,30); padding: 5px 14px 14px 14px; border-radius: 50%; position: relative; top: 50px; width: 200px; height: 200px;
+box-shadow: 0 2px 10px 5px rgba(20,20,20, 0.2)"
+         src="images/LogoTjok.png" data-th-src="|cid:tjok-logo|" alt="Logo Tjok Hove">
+</div>
+
+<div style="width: 90%; margin: 1rem auto; background-color: transparent;
+    border: solid 1px rgb(50,50,50); border-radius: 2rem; min-height: 250px; padding: 3rem 1rem 2rem">
+    <p>Beste,</p>
+    <p>Bedankt voor je reservatie!
+        <br/> Hieronder vind je de informatie over je reservatie:</p>
+    <br>
+
+    <p style="margin: 0.5rem 0">
+        Personen:
+    </p>
+    <ul style="margin: 0.5rem 0">
+        <li th:each="person : ${people}" data-th-text="|${person.firstName} ${person.lastName}|">person name</li>
+    </ul>
+    <p style="margin: 2.5rem 0 0.5rem 0">
+        Geselecteerde data:
+    </p>
+    <ul style="margin: 0.5rem 0">
+        <li th:each="openingDate : ${openingDates}" data-th-text="|${#dates.format(openingDate.openingDate, 'dd-MM-yyyy')} van ${openingDate.openingHour} tot ${openingDate.closingHour}|">exampledate van examplehour tot examplehour</li>
+    </ul>
+    <br>
+    <p>Bedankt met je reservatie en tot dan!</p>
+
+    <p style="color: rgb(80,80,80)">
+        <small style="font-size: 0.8rem">Dit is een automatische mail </small>
+    </p>
+</div>
+</body>
+</html>

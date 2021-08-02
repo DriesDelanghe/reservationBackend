@@ -3,6 +3,7 @@ package com.example.reservationrestapi.controllers;
 import com.example.reservationrestapi.exceptions.reservation.ReservationByOpeningDateException;
 import com.example.reservationrestapi.exceptions.reservation.ReservationFullException;
 import com.example.reservationrestapi.exceptions.reservation.ReservationNotFoundException;
+import com.example.reservationrestapi.mailingservice.EmailService;
 import com.example.reservationrestapi.model.Account;
 import com.example.reservationrestapi.model.OpeningDate;
 import com.example.reservationrestapi.model.Person;
@@ -68,13 +69,12 @@ public class reservationController {
     @PutMapping({"/data/reservation/{id}", "/data/reservation"})
     public Reservation replaceReservation(@RequestBody Reservation newReservation,
                                           @PathVariable(required = false) Integer id,
-                                          Principal principal) {
+                                          Principal principal, Locale locale) {
         ArrayList<OpeningDate> openingDateArrayList = new ArrayList<>();
         newReservation.getOpeningDateList().forEach(openingDate -> openingDateArrayList.add(openingDateRepository.findById(openingDate.getId()).get()));
         AtomicBoolean sizeExceeded = new AtomicBoolean(false);
         openingDateArrayList.forEach(openingDate -> {
             if ((openingDate.getReservationLimit() - openingDate.getReservationAmount()) < newReservation.getPersonList().size()) {
-                logger.warn("this is not right");
                 sizeExceeded.set(true);
             }
         });
@@ -83,7 +83,7 @@ public class reservationController {
 
         }
         if (id == null) {
-            return saveNewReservation(newReservation, principal);
+            return saveNewReservation(newReservation, principal, locale);
         }
 
         return reservationRepository.findById(id).map(reservation -> {
@@ -107,11 +107,12 @@ public class reservationController {
                 }
             });
             openingDateList.forEach(this::updateCountOpeningdate);
+            sendEmail(locale, savedReservation);
             return savedReservation;
-        }).orElseGet(() -> saveNewReservation(newReservation, principal));
+        }).orElseGet(() -> saveNewReservation(newReservation, principal, locale));
     }
 
-    public Reservation saveNewReservation(Reservation newReservation, Principal principal) {
+    public Reservation saveNewReservation(Reservation newReservation, Principal principal, Locale locale) {
         personRepository.saveAll(newReservation.getPersonList());
         if (newReservation.isConfirmation()) {
             emailRepository.save(newReservation.getEmail());
@@ -123,6 +124,7 @@ public class reservationController {
         newReservation.setReservationDate(new Date());
         Reservation reservation = reservationRepository.save(newReservation);
         reservation.getOpeningDateList().forEach(this::updateCountOpeningdate);
+        sendEmail(locale, reservation);
         return reservation;
     }
 
@@ -131,6 +133,17 @@ public class reservationController {
         logger.info(String.format("setting count of %s to %d", new SimpleDateFormat("dd/MM/yyyy").format(openingDate.getOpeningDate()), count));
         openingDate.setReservationAmount(count);
         openingDateRepository.save(openingDate);
+    }
+
+    public void sendEmail(Locale locale, Reservation reservation){
+        EmailService emailService = new EmailService();
+        try{
+        emailService.sendHTMLMail(reservation, "Info over reservatie bij Tjok Hove",
+                "mail/html/newreservation.html", locale);
+        }catch (Exception e){
+            logger.warn(e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     //general login access
